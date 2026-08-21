@@ -50,6 +50,9 @@ fi
 
 chmod +x "$ARQUIVO_BOOT"
 
+# Cria o link simbólico universal para o boot
+ln -sf "$ARQUIVO_BOOT" "$HOME/.config/hypr/start-wall.sh"
+
 # Executa imediatamente
 eval "$ARQUIVO_BOOT"
 echo "✅ Wallpaper ($MODO) aplicado e salvo para a assinatura: $SIGNATURE!"
