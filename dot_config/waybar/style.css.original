@@ -1,0 +1,61 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: monospace;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: rgba(20, 20, 20, 0.85);
+    color: #ffffff;
+    border-radius: 6px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background-color: transparent;
+    color: #888888;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+    color: #ffffff;
+    border-bottom: 2px solid #5294e2;
+}
+
+#clock,
+#language,
+#pulseaudio,
+#network,
+#tray {
+    padding: 0 10px;
+    margin: 2px 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Adicione no final do arquivo */
+
+#custom-plus {
+    padding: 0 8px;
+    color: #5294e2;
+    font-weight: bold;
+    font-size: 16px;
+    background-color: transparent;
+    margin: 2px 4px;
+    transition: all 0.2s ease;
+}
+
+#custom-plus:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+#backlight {
+    padding: 0 10px;
+    margin: 2px 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}

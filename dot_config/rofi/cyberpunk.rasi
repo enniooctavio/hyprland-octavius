@@ -1,0 +1,87 @@
+* {
+    /* Paleta Base Unificada */
+    bg0: rgba(17, 17, 27, 0.95);       /* Fundo escuro (Breu) quase sólido */
+    bg1: rgba(17, 17, 27, 0.85);       /* Fundo da barra de pesquisa */
+    fg0: #cdd6f4;                      /* Branco Gelo para os textos padrão */
+    fg-muted: #595959;                 /* Cinza para texto inativo/placeholder */
+    cyan: #00ffff;                     /* Ciano Elétrico (Estrutura/Repouso) */
+    magenta: #ff007c;                  /* Magenta Neon (Foco/Ação) */
+    magenta-trans: rgba(255, 0, 124, 0.15); /* Fundo magenta translúcido */
+
+    background-color: transparent;
+    text-color: @fg0;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 600px;
+    x-offset: 0px;
+    y-offset: 0px;
+
+    background-color: @bg0;
+    border: 2px;
+    border-color: @cyan;
+    border-radius: 10px;
+}
+
+mainbox {
+    padding: 20px;
+}
+
+inputbar {
+    background-color: @bg1;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px;
+    border-color: rgba(0, 255, 255, 0.3); /* Borda ciano sutil acompanhando o Waybar */
+    spacing: 10px;
+    children: [prompt, entry];
+}
+
+prompt {
+    text-color: @cyan; /* Substitui o antigo amarelo pela cor estrutural do tema */
+    font: "monospace bold 13";
+}
+
+entry {
+    placeholder: "Pesquisar aplicativo...";
+    placeholder-color: @fg-muted;
+}
+
+listview {
+    margin: 15px 0 0 0;
+    lines: 8;
+    columns: 1;
+    spacing: 6px;
+    scrollbar: false;
+}
+
+element {
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+element normal.normal {
+    background-color: transparent;
+}
+
+element selected.normal {
+    /* Segue a exata mesma regra de destaque do seu Workspace 5 na Waybar */
+    background-color: @magenta-trans;
+    text-color: @magenta;
+    border: 1px;
+    border-color: @magenta;
+}
+
+element-icon {
+    size: 24px;
+    margin-right: 12px;
+}
+
+element-text {
+    vertical-align: 0.5;
+    text-color: inherit; /* Força o texto a ficar Magenta quando selecionado */
+}

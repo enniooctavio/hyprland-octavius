@@ -1,0 +1,2 @@
+# Impede o Auto-Suspend e permite Wake-up para o Intel AX211 Bluetooth
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0033", ATTR{power/autosuspend}="-1", ATTR{power/control}="on", ATTR{power/wakeup}="enabled"

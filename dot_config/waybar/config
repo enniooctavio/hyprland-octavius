@@ -1,0 +1,102 @@
+{
+
+    "layer": "top",
+    "position": "top",
+    "height": 24,
+    "margin-top": 2,
+    "margin-left": 5,
+    "margin-right": 5,
+    "modules-left": ["hyprland/workspaces", "custom/plus"],
+    "modules-center": ["clock"],
+    "modules-right": ["cpu", "memory", "hyprland/language", "pulseaudio", "backlight", "network", "battery", "tray"],
+
+    "hyprland/workspaces": {
+        "all-outputs": false,
+        "disable-scroll": true,
+        "warp-on-scroll": false,
+        "format": "{name}"
+    },
+
+    "custom/plus": {
+        "format": "+",
+        "tooltip": false,
+        "on-click": "/home/ennio.octavio/.local/bin/cycle-ws"
+    },
+
+    "pulseaudio": {
+        "format": "{icon}  {volume}%",
+        "format-bluetooth": "{icon} 󰂯 {volume}%",
+        "format-muted": "󰝟  Mute",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰋋",
+            "headset": "󰋋",
+            "phone": "󰏲",
+            "portable": "󰏲",
+            "car": "󰆋",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol"
+    },
+
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["󰃞", "󰃟", "󰃠"]
+    },
+
+    "network": {
+        "format-wifi": "  {essid}",
+        "format-ethernet": "󰈀 {ifname}",
+        "format-disconnected": "⚠ Disconnected",
+        "tooltip-format": "{ifname} via {gwaddr}"
+    },
+
+    "hyprland/language": {
+        "format": "{}",
+        "format-en": "US",
+        "format-pt": "BR"
+    },
+
+    "clock": {
+        "format": "{:%H:%M  %d/%m}",
+        "format-alt": "{:%Y-%m-%d}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode"          : "month",
+            "mode-mon-col"  : 3,
+            "weeks-pos"     : "right",
+            "on-scroll"     : 1,
+            "format": {
+                "months":     "<span color='#ff2a85'><b>{}</b></span>",
+                "days":       "<span color='#f8f8f2'><b>{}</b></span>",
+                "weeks":      "<span color='#33ccff'><b>W{}</b></span>",
+                "weekdays":   "<span color='#ffea00'><b>{}</b></span>",
+                "today":      "<span color='#ff2a85'><b><u>{}</u></b></span>"
+            }
+        },
+        "on-click": "kitty --class=cal-popup -e sh -c 'cal -y; echo 'Pressione Enter para fechar...'; read'"
+    },
+
+    "cpu": {
+        "format": "󰍛 {usage}%",
+        "tooltip": false
+    },
+
+    "memory": {
+        "format": "󰘚 {used:0.1f}GB",
+        "tooltip-format": "Usando: {used}GB / Total: {total}GB"
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󱐋 {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    }
+
+}

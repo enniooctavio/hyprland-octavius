@@ -1,0 +1,89 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: monospace;
+    font-size: 13px;
+    min-height: 0;
+    color: #cdd6f4; /* Branco Gelo - Cor base para todo o texto */
+}
+
+/* Janela principal da barra com fundo breu e borda fina em Ciano */
+window#waybar {
+    background-color: rgba(17, 17, 27, 0.85);
+    border: 1px solid rgba(0, 255, 255, 0.5); /* Ciano Elétrico */
+    border-radius: 6px;
+}
+
+/* Estilo padrão dos workspaces (Inativos) */
+#workspaces button {
+    padding: 0 10px;
+    background-color: transparent;
+    color: #595959; /* Números bem escurecidos quando inativos para não chamar atenção */
+    border-radius: 4px;
+    margin: 2px 2px;
+    transition: all 0.2s ease;
+}
+
+/* Workspace ativo ganha destaque Cyberpunk em Magenta Neon (Pink) */
+#workspaces button.active,
+#workspaces button.focused {
+    color: #ff007c; /* Texto Magenta brilhante */
+    background-color: rgba(255, 0, 124, 0.15); /* Fundo levemente rosado */
+    border-bottom: 2px solid #ff007c; /* Linha neon na base */
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+/* Hover nos workspaces */
+#workspaces button:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+}
+
+/* Módulos gerais organizados como pílulas tecnológicas unificadas */
+#clock,
+#language,
+#cpu,
+#memory,
+#pulseaudio,
+#network,
+#backlight,
+#battery,
+#tray {
+    padding: 0 12px;
+    margin: 4px 6px;
+    background-color: rgba(17, 17, 27, 0.85); /* Fundo igual ao da barra para sumir */
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 255, 0.3); /* Borda ciano sutil */
+}
+
+/* Botão de mais (+) mantido, mas ajustado para a paleta */
+#custom-plus {
+    padding: 0 8px;
+    color: #00ffff;
+    font-weight: bold;
+    font-size: 16px;
+    background-color: transparent;
+    margin: 2px 4px;
+    transition: all 0.2s ease;
+}
+
+#custom-plus:hover {
+    color: #11111b;
+    background-color: #00ffff;
+    border-radius: 4px;
+}
+
+/* Estilização e aumento do pop-up de hover (Calendário) */
+tooltip {
+    background-color: rgba(17, 17, 27, 0.95);
+    border: 2px solid #ff007c; /* Borda Magenta para o tooltip saltar aos olhos */
+    border-radius: 10px;
+    padding: 15px;
+}
+
+tooltip label {
+    color: #cdd6f4;
+    font-size: 15px; 
+    font-family: monospace;
+}

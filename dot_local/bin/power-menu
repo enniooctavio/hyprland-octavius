@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DESLIGAR="⏻ Desligar"
+REINICIAR="⟳ Reiniciar"
+SUSPENDER="⏾ Suspender"
+SAIR="󰍃 Sair do Hyprland"
+
+ESCOLHA=$(echo -e "$DESLIGAR\n$REINICIAR\n$SUSPENDER\n$SAIR" | rofi -dmenu -i -p "Sistema")
+
+case "$ESCOLHA" in
+    "$DESLIGAR") systemctl poweroff ;;
+    "$REINICIAR") systemctl reboot ;;
+    "$SUSPENDER") systemctl suspend ;;
+    "$SAIR") killall Hyprland ;;
+esac

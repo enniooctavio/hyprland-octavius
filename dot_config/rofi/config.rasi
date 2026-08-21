@@ -1,0 +1,11 @@
+configuration {
+    font: "monospace 13";
+    show-icons: true;
+    icon-theme: "Papirus";
+    display-drun: "󰣪 Apps";
+    drun-display-format: "{name}";
+    disable-history: false;
+    sidebar-mode: false;
+}
+
+@theme "~/.config/rofi/cyberpunk.rasi"

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Pega o ID numérico do workspace atual nativamente[cite: 21]
+WS=$(hyprctl activeworkspace -j | grep '"id":' | head -n 1 | awk '{print $2}' | tr -d ',')
+NEXT=$(((WS + 2) % 9 + 1))
+
+# Sintaxe nativa limpa para o hyprland.conf
+if [ "$1" == "move" ]; then
+    hyprctl dispatch movetoworkspace "$NEXT"
+else
+    hyprctl dispatch workspace "$NEXT"
+fi

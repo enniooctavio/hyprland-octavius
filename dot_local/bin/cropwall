@@ -1,0 +1,55 @@
+#!/bin/bash
+
+MODO=$1
+ORIGINAL=$2
+SAVE=$3
+
+if [ -z "$MODO" ] || [ -z "$ORIGINAL" ] || [ -z "$SAVE" ]; then
+    echo "Erro: Parâmetros insuficientes."
+    echo "Uso: cropwall <duplo|triplo> <nome_do_arquivo_na_pasta> <nome_base>"
+    echo "Ex: cropwall triplo imagem.jpg portal"
+    exit 1
+fi
+
+if [ "$MODO" == "duplo" ]; then
+    PASTA="$HOME/Imagens/Wallpapers/duplo"
+elif [ "$MODO" == "triplo" ]; then
+    PASTA="$HOME/Imagens/Wallpapers/triplo"
+else
+    echo "Erro: Modo desconhecido. Use 'duplo' ou 'triplo'."
+    exit 1
+fi
+
+mkdir -p "$PASTA"
+
+if [ ! -f "$PASTA/$ORIGINAL" ]; then
+    echo "Erro: O arquivo '$PASTA/$ORIGINAL' não foi encontrado."
+    exit 1
+fi
+
+EXT="${ORIGINAL##*.}"
+TEMP_IMG="$PASTA/temp_wide.$EXT"
+
+if [ "$MODO" == "duplo" ]; then
+    # 1. Enquadramento de Cinema: Extrai a faixa central (corta o excesso de asfalto/céu)
+    magick "$PASTA/$ORIGINAL" -gravity center -crop "100%x50%+0+0" +repage "$TEMP_IMG"
+    
+    # 2. Fatiamento Físico Rigoroso: Força a extração da metade esquerda e depois a direita
+    magick "$TEMP_IMG" -gravity West -crop "50%x100%+0+0" +repage "$PASTA/${SAVE}0.$EXT"
+    magick "$TEMP_IMG" -gravity East -crop "50%x100%+0+0" +repage "$PASTA/${SAVE}1.$EXT"
+
+elif [ "$MODO" == "triplo" ]; then
+    # 1. Enquadramento de Cinema Ultra: Extrai a faixa central super estreita
+    magick "$PASTA/$ORIGINAL" -gravity center -crop "100%x33.333%+0+0" +repage "$TEMP_IMG"
+    
+    # 2. Fatiamento em 3: Força a extração da Esquerda, Centro e Direita
+    magick "$TEMP_IMG" -gravity West -crop "33.333%x100%+0+0" +repage "$PASTA/${SAVE}0.$EXT"
+    magick "$TEMP_IMG" -gravity center -crop "33.333%x100%+0+0" +repage "$PASTA/${SAVE}1.$EXT"
+    magick "$TEMP_IMG" -gravity East -crop "33.333%x100%+0+0" +repage "$PASTA/${SAVE}2.$EXT"
+fi
+
+# Limpa o arquivo temporário e apaga a imagem original não fatiada
+rm "$TEMP_IMG"
+rm "$PASTA/$ORIGINAL"
+
+echo "✅ Sucesso! Imagem fatiada perfeitamente para $MODO telas e salva em $PASTA."

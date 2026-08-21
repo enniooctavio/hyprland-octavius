@@ -1,0 +1,55 @@
+#!/bin/bash
+
+MODO=$1
+PARAM1=$2
+PARAM2=${3:-jpg}
+
+if [ -z "$MODO" ]; then
+    echo "Uso: setwall <triplo|duplo|slide> <nome/pasta> [ext]"
+    exit 1
+fi
+
+# Pega a assinatura atual para saber onde salvar a configuração
+SIGNATURE=$(hyprctl -j monitors | jq -r '.[] | select(.disabled == false) | if .serial != "" then .serial else .name end' | sort | paste -sd "_" -)
+ARQUIVO_BOOT="$HOME/.config/hypr/scripts/start-wall_${SIGNATURE}.sh"
+
+# Lê TODOS os monitores conectados fisicamente (ativos ou com a tampa fechada)
+# Filtra apenas os ativos e ordena estritamente da esquerda para a direita (.x)
+MONITORES=($(hyprctl -j monitors all | jq -r '[.[] | select(.disabled == false)] | sort_by(.x) | .[].name'))
+QTD=${#MONITORES[@]}
+
+# Diretórios universais (Usa XDG se existir, senão usa Imagens)
+PICTURES_DIR=${XDG_PICTURES_DIR:-$HOME/Imagens}
+PASTA_DUPLO="$PICTURES_DIR/Wallpapers/duplo"
+PASTA_TRIPLO="$PICTURES_DIR/Wallpapers/triplo"
+PASTA_WALLPAPERS="$PICTURES_DIR/Wallpapers/$PARAM1"
+
+# Inicia o arquivo de boot limpo
+echo "#!/bin/bash" > "$ARQUIVO_BOOT"
+echo "killall swaybg awww-daemon sleep 2>/dev/null" >> "$ARQUIVO_BOOT"
+echo "pkill -f wallpaper-slideshow.sh 2>/dev/null" >> "$ARQUIVO_BOOT"
+
+if [ "$MODO" == "triplo" ]; then
+    IMG0="$PASTA_TRIPLO/${PARAM1}0.$PARAM2"
+    IMG1="$PASTA_TRIPLO/${PARAM1}1.$PARAM2"
+    IMG2="$PASTA_TRIPLO/${PARAM1}2.$PARAM2"
+    
+    echo "swaybg -o ${MONITORES[0]} -i $IMG0 -m fill -o ${MONITORES[1]} -i $IMG1 -m fill -o ${MONITORES[2]} -i $IMG2 -m fill >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+    
+elif [ "$MODO" == "duplo" ]; then
+    IMG0="$PASTA_DUPLO/${PARAM1}0.$PARAM2"
+    IMG1="$PASTA_DUPLO/${PARAM1}1.$PARAM2"
+    
+    echo "swaybg -o ${MONITORES[0]} -i $IMG0 -m fill -o ${MONITORES[1]} -i $IMG1 -m fill >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+
+elif [ "$MODO" == "slide" ]; then
+    echo "~/.local/bin/awww-daemon >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+    echo "sleep 1" >> "$ARQUIVO_BOOT"
+    echo "~/.config/hypr/scripts/wallpaper-slideshow.sh \"$PASTA_WALLPAPERS\" >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+fi
+
+chmod +x "$ARQUIVO_BOOT"
+
+# Executa imediatamente
+eval "$ARQUIVO_BOOT"
+echo "✅ Wallpaper ($MODO) aplicado e salvo para a assinatura: $SIGNATURE!"
