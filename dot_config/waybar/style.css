@@ -74,6 +74,22 @@ window#waybar {
     border-radius: 4px;
 }
 
+#custom-power {
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid rgba(0, 255, 238, 0.4);
+    padding: 0px 9px 0px 7px;
+    margin: 4px 4px;
+    border-radius: 6px;
+    color: #ff007c; /* Rosa neon característico */
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#custom-power:hover {
+    background: rgba(255, 0, 124, 0.2);
+    border-color: #ff007c;
+}
+
 /* Estilização e aumento do pop-up de hover (Calendário) */
 tooltip {
     background-color: rgba(17, 17, 27, 0.95);

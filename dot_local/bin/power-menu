@@ -11,5 +11,5 @@ case "$ESCOLHA" in
     "$DESLIGAR") systemctl poweroff ;;
     "$REINICIAR") systemctl reboot ;;
     "$SUSPENDER") systemctl suspend ;;
-    "$SAIR") killall Hyprland ;;
+    "$SAIR") hyprctl dispatch exit ;;
 esac

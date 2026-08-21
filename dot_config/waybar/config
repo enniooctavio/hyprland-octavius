@@ -8,7 +8,7 @@
     "margin-right": 5,
     "modules-left": ["hyprland/workspaces", "custom/plus"],
     "modules-center": ["clock"],
-    "modules-right": ["cpu", "memory", "hyprland/language", "pulseaudio", "backlight", "network", "battery", "tray"],
+    "modules-right": ["cpu", "memory", "hyprland/language", "pulseaudio", "backlight", "network", "battery", "tray", "custom/power"],
 
     "hyprland/workspaces": {
         "all-outputs": false,
@@ -97,6 +97,12 @@
         "format-plugged": " {capacity}%",
         "format-alt": "{icon} {time}",
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "on-click": "/home/ennio.octavio/.local/bin/power-menu",
+        "tooltip": false
     }
 
 }
