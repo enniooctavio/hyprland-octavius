@@ -38,6 +38,7 @@ ln -sf "$DIR_PROJETO/dot_local/bin/setwall" "$DIR_BIN/setwall"
 ln -sf "$DIR_PROJETO/dot_local/bin/cropwall" "$DIR_BIN/cropwall"
 ln -sf "$DIR_PROJETO/dot_local/bin/cycle-ws" "$DIR_BIN/cycle-ws"
 ln -sf "$DIR_PROJETO/dot_local/bin/power-menu" "$DIR_BIN/power-menu"
+ln -sf "$DIR_PROJETO/dot_local/bin/toggle-desktop" "$DIR_BIN/toggle-desktop"
 
 # 6. Copia os wallpapers padrão para a pasta de Imagens
 DIR_IMAGENS=${XDG_PICTURES_DIR:-$HOME/Imagens}

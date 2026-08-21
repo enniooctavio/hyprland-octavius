@@ -1,0 +1,40 @@
+#!/bin/bash
+
+STATE_FILE="/tmp/hypr_desktop_ws_state"
+
+# Verifica se os monitores já estão nas workspaces de descanso (91, 92, 93...)
+is_hidden=false
+current_active_ws=$(hyprctl monitors -j | jq -r '[.[] | select(.disabled == false) | .activeWorkspace.id] | any(. >= 91)')
+
+if [ "$current_active_ws" = "true" ]; then
+    is_hidden=true
+fi
+
+if [ "$is_hidden" = false ]; then
+    # Ocultar: Ordena estritamente da esquerda para a direita (.x) e salva o estado original
+    hyprctl monitors -j | jq -r 'sort_by(.x) | .[] | select(.disabled == false) | "\(.name) \(.activeWorkspace.id)"' > "$STATE_FILE"
+    
+    counter=91
+    while read -r mon ws_id; do
+        if [ -n "$mon" ]; then
+            hyprctl dispatch focusmonitor "$mon"
+            hyprctl dispatch workspace "$counter"
+            counter=$((counter + 1))
+        fi
+    done < "$STATE_FILE"
+else
+    # Restaurar: Lê o arquivo salvo e devolve cada monitor para o seu workspace de origem
+    if [ -f "$STATE_FILE" ]; then
+        while read -r mon ws_id; do
+            if [ -n "$mon" ] && [ -n "$ws_id" ]; then
+                hyprctl dispatch focusmonitor "$mon"
+                hyprctl dispatch workspace "$ws_id"
+            fi
+        done < "$STATE_FILE"
+        
+        rm -f "$STATE_FILE"
+    else
+        # Fallback de segurança caso o arquivo tenha se perdido: joga todo mundo pro workspace 1, 2 e 3
+        hyprctl monitors -j | jq -r 'sort_by(.x) | .[].name' | awk '{print "hyprctl dispatch focusmonitor " $1 " && hyprctl dispatch workspace " NR}' | bash
+    fi
+fi
