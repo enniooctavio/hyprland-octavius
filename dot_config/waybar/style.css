@@ -1,35 +1,35 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: monospace;
+    font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 13px;
     min-height: 0;
-    color: #cdd6f4; /* Branco Gelo - Cor base para todo o texto */
+    color: #cdd6f4;
 }
 
 /* Janela principal da barra com fundo breu e borda fina em Ciano */
 window#waybar {
     background-color: rgba(17, 17, 27, 0.85);
-    border: 1px solid rgba(0, 255, 255, 0.5); /* Ciano Elétrico */
+    border: 1px solid rgba(0, 255, 255, 0.5);
     border-radius: 6px;
 }
 
-/* Estilo padrão dos workspaces (Inativos) */
+/* Workspaces Inativos */
 #workspaces button {
     padding: 0 10px;
     background-color: transparent;
-    color: #595959; /* Números bem escurecidos quando inativos para não chamar atenção */
+    color: #595959;
     border-radius: 4px;
     margin: 2px 2px;
     transition: all 0.2s ease;
 }
 
-/* Workspace ativo ganha destaque Cyberpunk em Magenta Neon (Pink) */
+/* Workspace Ativo - Magenta Neon */
 #workspaces button.active,
 #workspaces button.focused {
-    color: #ff007c; /* Texto Magenta brilhante */
-    background-color: rgba(255, 0, 124, 0.15); /* Fundo levemente rosado */
-    border-bottom: 2px solid #ff007c; /* Linha neon na base */
+    color: #ff007c;
+    background-color: rgba(255, 0, 124, 0.15);
+    border-bottom: 2px solid #ff007c;
     font-weight: bold;
     border-radius: 4px;
 }
@@ -40,7 +40,7 @@ window#waybar {
     color: #00ffff;
 }
 
-/* Módulos gerais organizados como pílulas tecnológicas unificadas */
+/* Módulos em formato de pílulas unificadas */
 #clock,
 #language,
 #cpu,
@@ -49,15 +49,16 @@ window#waybar {
 #network,
 #backlight,
 #battery,
-#tray {
+#tray,
+#custom-notification {
     padding: 0 12px;
-    margin: 4px 6px;
-    background-color: rgba(17, 17, 27, 0.85); /* Fundo igual ao da barra para sumir */
+    margin: 4px 4px;
+    background-color: rgba(17, 17, 27, 0.85);
     border-radius: 6px;
-    border: 1px solid rgba(0, 255, 255, 0.3); /* Borda ciano sutil */
+    border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
-/* Botão de mais (+) mantido, mas ajustado para a paleta */
+/* Botão de adicionar workspace (+) */
 #custom-plus {
     padding: 0 8px;
     color: #00ffff;
@@ -74,32 +75,47 @@ window#waybar {
     border-radius: 4px;
 }
 
-#custom-power {
-    background: rgba(17, 17, 17, 0.8);
-    border: 1px solid rgba(0, 255, 238, 0.4);
-    padding: 0px 9px 0px 7px;
+/* Unificação do Sino de Notificações */
+#custom-notification {
+    padding: 0 10px;
     margin: 4px 4px;
+    font-size: 14px;
+    color: #cdd6f4;
+    transition: all 0.2s ease;
+}
+
+#custom-notification:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+    border-color: #00ffff;
+}
+
+/* Botão Power Perfeitamente Alinhado e Simétrico */
+#custom-power {
+    background-color: rgba(17, 17, 27, 0.85);
+    border: 1px solid rgba(0, 255, 238, 0.4);
     border-radius: 6px;
-    color: #ff007c; /* Rosa neon característico */
-    font-size: 13px;
-    font-weight: bold;
+    padding: 0 10px;
+    margin: 4px 4px;
+    color: #ff007c;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 #custom-power:hover {
-    background: rgba(255, 0, 124, 0.2);
+    background-color: rgba(255, 0, 124, 0.2);
     border-color: #ff007c;
 }
 
-/* Estilização e aumento do pop-up de hover (Calendário) */
+/* Tooltip do Calendário / Hover */
 tooltip {
     background-color: rgba(17, 17, 27, 0.95);
-    border: 2px solid #ff007c; /* Borda Magenta para o tooltip saltar aos olhos */
+    border: 2px solid #ff007c;
     border-radius: 10px;
     padding: 15px;
 }
 
 tooltip label {
     color: #cdd6f4;
-    font-size: 15px; 
+    font-size: 15px;
     font-family: monospace;
 }

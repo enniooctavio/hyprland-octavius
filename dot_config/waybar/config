@@ -1,5 +1,4 @@
 {
-
     "layer": "top",
     "position": "top",
     "height": 24,
@@ -8,7 +7,18 @@
     "margin-right": 5,
     "modules-left": ["hyprland/workspaces", "custom/plus"],
     "modules-center": ["clock"],
-    "modules-right": ["cpu", "memory", "hyprland/language", "pulseaudio", "backlight", "network", "battery", "tray", "custom/power"],
+    "modules-right": [
+        "cpu",
+        "memory",
+        "hyprland/language",
+        "pulseaudio",
+        "backlight",
+        "network",
+        "battery",
+        "tray",
+        "custom/notification",
+        "custom/power"
+    ],
 
     "hyprland/workspaces": {
         "all-outputs": false,
@@ -41,7 +51,10 @@
 
     "backlight": {
         "format": "{icon} {percent}%",
-        "format-icons": ["󰃞", "󰃟", "󰃠"]
+        "format-icons": ["󰃞", "󰃟", "󰃠"],
+        "on-scroll-up": "swayosd-client --brightness raise",
+        "on-scroll-down": "swayosd-client --brightness lower",
+        "smooth-scrolling-threshold": 1
     },
 
     "network": {
@@ -74,7 +87,7 @@
                 "today":      "<span color='#ff2a85'><b><u>{}</u></b></span>"
             }
         },
-        "on-click": "kitty --class=cal-popup -e sh -c 'cal -y; echo 'Pressione Enter para fechar...'; read'"
+        "on-click": "kitty --class=cal-popup -e sh -c 'cal -y; echo Pressione Enter para fechar...; read'"
     },
 
     "cpu": {
@@ -99,10 +112,30 @@
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     },
 
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󰂚<span foreground='#ff007c'><sup></sup></span>",
+            "none": "󰂚",
+            "dnd-notification": "󰂛<span foreground='#ff007c'><sup></sup></span>",
+            "dnd-none": "󰂛",
+            "inhibited-notification": "󰂚<span foreground='#ff007c'><sup></sup></span>",
+            "inhibited-none": "󰂚",
+            "dnd-inhibited-notification": "󰂛<span foreground='#ff007c'><sup></sup></span>",
+            "dnd-inhibited-none": "󰂛"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+
     "custom/power": {
-        "format": "⏻",
+        "format": "󰐥",
         "on-click": "/home/ennio.octavio/.local/bin/power-menu",
         "tooltip": false
     }
-
 }

@@ -1,0 +1,59 @@
+@define-color bg-dark rgba(17, 17, 27, 0.92);
+@define-color border-neon rgba(0, 255, 255, 0.7);
+@define-color accent-pink #ff007c;
+@define-color text-main #cdd6f4;
+
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+}
+
+.control-center {
+  background: @bg-dark;
+  border: 2px solid @border-neon;
+  border-radius: 12px;
+  padding: 12px;
+  color: @text-main;
+}
+
+.notification-row {
+  outline: none;
+  margin: 6px;
+}
+
+.notification {
+  background: rgba(30, 30, 46, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.notification-default-action:hover {
+  background: rgba(255, 0, 124, 0.15);
+}
+
+.widget-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.widget-title button {
+  background: rgba(255, 0, 124, 0.2);
+  border: 1px solid @accent-pink;
+  border-radius: 6px;
+  color: @text-main;
+  padding: 4px 10px;
+}
+
+.widget-dnd {
+  margin: 8px 0;
+}
+
+.widget-dnd switch {
+  background: rgba(49, 50, 68, 1);
+  border-radius: 12px;
+}
+
+.widget-dnd switch:checked {
+  background: @accent-pink;
+}
