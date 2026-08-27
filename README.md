@@ -1,40 +1,114 @@
 # 🚀 Hyprland Octavius
 
-Um ecossistema completo, modular e nativo para o [Hyprland](https://hyprland.org/), focado em produtividade, gerenciamento inteligente de múltiplos monitores através de interface gráfica e uma estética cyberpunk refinada, priorizando a eficiência energética de notebooks.
+Um ecossistema modular, performático e nativo para o [Hyprland](https://hyprland.org/)[cite: 13], projetado para workflows corporativos de alta produtividade, gerenciamento avançado de múltiplos monitores em estações dock e estética Cyberpunk refinada com foco em eficiência energética e estabilidade[cite: 13].
+
+---
 
 ## 🌌 Visão Geral
-Este projeto centraliza todas as configurações do Hyprland em favor da sintaxe nativa `.conf`. Ele gerencia layouts complexos de múltiplos monitores de forma nativa através do `nwg-displays`, atalhos de navegação otimizados, e conta com um sistema inteligente de aplicação de wallpapers cinematográficos que fluem perfeitamente por várias telas.
+
+O **Project Octavius** centraliza e versiona todas as configurações do Hyprland em sua sintaxe declarativa nativa `.conf`[cite: 13]. O ambiente conta com detecção dinâmica de monitores via descritores físicos de hardware[cite: 13], navegação espacial de janelas, central de controle e notificações deslizante, pop-ups OSD modernos e suporte a gestos multi-touch no touchpad.
+
+---
 
 ## ✨ Funcionalidades Principais
-* **Gerenciamento Visual de Monitores e Workspaces:** Utiliza o `nwg-displays` para configuração gráfica de múltiplos displays (portátil + externos) utilizando descrições físicas de hardware (`desc:`), garantindo portabilidade entre diferentes ambientes (casa/trabalho) sem conflitos de portas físicas. Os workspaces são rigidamente mapeados e salvos de forma independente em `workspaces.conf`.
-* **Plugins e Extensões via `hyprpm`:** O ecossistema gerencia nativamente plugins de experiência visual avançada através do *Hyprland Plugin Manager* (`hyprpm`):
-  * **`hyprfocus`**: Adiciona animações dinâmicas de foco (efeito *shrink* e *flash* ao alternar janelas).
-  * **`hyprexpo`**: Oferece a visão geral dos workspaces (estilo Exposé, acionado por `SUPER + W`).
-* **Navegação Otimizada:** Atalhos refinados para movimento entre janelas (`SUPER + N`), workspaces invisíveis/scratchpads (`SUPER + S`) e ações de janela perfeitamente mapeadas.
-* **Sistema Avançado de Wallpapers:** Scripts customizados (`setwall` e `cropwall`) que utilizam recortes cinematográficos ultrawide e fatiamento exato para que uma única imagem flua através de múltiplos monitores.
-* **Waybar Modular e Estilizado:** Barra de status integrada com indicadores de CPU, Memória, Áudio, Rede e Bateria com caixas estilizadas em bordas neon.
-* **Estabilidade e Bateria (Intel iGPU):** Configurado com *Damage Tracking* e *VFR (Variable Frame Rate)* ativos para garantir máxima autonomia de bateria em notebooks corporativos.
-* **Interface Coesa:** Integração modular com Waybar, Rofi e regras estritas de opacidade por classe de aplicativo.
+
+* **Overview Espacial por Monitor (`Hyprspace`):** Visão geral de janelas abertas filtrada exclusivamente para o display em foco, eliminando poluição visual de múltiplos monitores (`SUPER + W` ou gesto de 3 dedos para cima)[cite: 4, 5].
+* **Central de Notificações & Controle (`SwayNC`):** Painel lateral deslizante com histórico de alertas, controle de Não Perturbe (DND), controles multimídia MPRIS e integração com a Waybar (`SUPER + SHIFT + D`)[cite: 9, 11].
+* **Regras de Janela Modernizadas (Hyprland 0.56+):**
+  * **Picture-in-Picture:** Janelas flutuantes com ancoragem automática no canto inferior direito (`pin on` + `size 25% 25%`).
+  * **Diálogos de Sistema:** Janelas de seleção de arquivos, `pavucontrol` e autenticação com comportamento flutuante automático (`float on`).
+  * **Isolamento de Screen Share (`xwaylandvideobridge`):** Ocultação transparente e isolamento de buffers virtuais para evitar telas pretas em transmissões no Slack, Google Meet e Discord.
+* **Gestos Nativos no Touchpad (`libinput-gestures`):** Deslize de 3 dedos para navegação contínua entre workspaces (`swipe left/right`), scratchpad rápido (`swipe down`) e ativação do overview (`swipe up`)[cite: 4].
+* **Autenticação Híbrida e Resiliente:** Suporte unificado para senha corporativa (JumpCloud), PIN local via `pam_pwdfile` e biometria rápida via `pam_fprintd` no `hyprlock`, `sudo` e `polkit`[cite: 2].
+* **OSD Gráfico e Controle de Mídia (`SwayOSD`):** Feedback visual flutuante na tela para ajustes de volume, brilho e caps lock[cite: 3, 5].
+* **Efeitos de Foco & Shaders:** Animações dinâmicas de foco (`hyprfocus`)[cite: 3, 5, 13] e suporte a shaders pós-processamento GLSL (efeitos CRT, ruído VHS e aberração cromática).
+* **Gerenciamento Visual de Displays (`nwg-displays`):** Mapeamento de telas portátil + dock por descritor físico (`desc:`), garantindo persistência sem dependência de nomes de portas de vídeo[cite: 13].
+* **Sistema Avançado de Wallpapers (`setwall` / `cropwall`):** Fatiamento cirúrgico de papéis de parede panorâmicos que fluem sem quebras entre múltiplos monitores[cite: 13].
+* **Scratchpad Terminal Invisível:** Instância persistente do Kitty pronta para chamadas imediatas em workspace especial (`SUPER + S`)[cite: 3, 5, 13].
+
+---
 
 ## 📦 Dependências e Pré-requisitos
-Para o funcionamento pleno do Octavius, certifique-se de ter os seguintes pacotes instalados no seu sistema:
-* `nwg-displays`: Interface gráfica para gerenciamento de monitores e workspaces no Wayland.
-* `swaybg`: Responsável por renderizar os papéis de parede por monitor.
-* `imagemagick`: Utilizado pelo `cropwall` para os recortes cirúrgicos de imagens.
-* `jq`: Necessário para ler e alinhar a ordem física dos monitores via JSON.
-* Pacotes centrais: `hypridle`, `hyprlock`, `waybar`, `rofi`, `wl-clipboard` e `cliphist`.
 
-## ⚙️ Configuração Inicial do Ambiente (Monitores e Plugins)
-Como o Octavius prioriza a portabilidade e separa as configurações de hardware por máquina, siga estes passos após a instalação:
+Para o funcionamento pleno do ecossistema, certifique-se de instalar as dependências no sistema base[cite: 13]:
 
-1. **Configuração dos Monitores (`nwg-displays`):**
-   Abra a interface gráfica do `nwg-displays` para mapear suas telas. Lembre-se de ativar a caixinha **"Usar descrição"** para ancorar as configurações ao modelo e número de série exatos do hardware. Isso gerará automaticamente os arquivos locais `monitors.conf` e `workspaces.conf` em `~/.config/hypr/`.
-2. **Habilitação dos Plugins (`hyprpm`):**
-   Os plugins `hyprfocus` e `hyprexpo` declarados no `hyprland.conf` dependem do gerenciador oficial. Certifique-se de que eles estão habilitados e compilados através do `hyprpm` no primeiro boot.
+```bash
+sudo apt update && sudo apt install -y \
+  hyprland \
+  waybar \
+  rofi \
+  sway-notification-center \
+  libinput-gestures \
+  brightnessctl \
+  swaybg \
+  imagemagick \
+  jq \
+  wl-clipboard \
+  cliphist \
+  libpam-pwdfile \
+  whois \
+  nwg-displays
+```
 
-## 🚀 Instalação
-O projeto conta com um instalador automatizado que cria pastas alvo, faz backup das configurações antigas, copia os assets de imagem e aplica links simbólicos de todos os binários e dotfiles.
+### Utilitários Complementares
+* **`SwayOSD`**: Servidor e cliente de pop-ups visuais Wayland para teclado e brilho[cite: 3, 5].
+* **`fcitx5`**: Gerenciador de input para composição de acentuação e cedilha (`ç`)[cite: 3, 5].
 
-1. Clone este repositório no seu diretório home:
-   ```bash
-   git clone [https://github.com/enniooctavio/hyprland-octavius.git](https://github.com/enniooctavio/hyprland-octavius.git) ~/hyprland-octavius
+---
+
+## 🛠️ Compilação do Hyprspace (Hyprland 0.56+)
+
+Devido à migração do pipeline gráfico para Aquamarine e modularização de bibliotecas (`hyprutils`), o Hyprspace deve ser compilado a partir da branch com correções de compatibilidade (PR #238):
+
+```bash
+# 1. Clonar o repositório e buscar a branch do PR #238
+cd ~/.local/share
+git clone [https://github.com/KZDKM/Hyprspace.git](https://github.com/KZDKM/Hyprspace.git)
+cd Hyprspace
+git fetch origin pull/238/head:pr-238
+git checkout pr-238
+
+# 2. Compilar contra os cabeçalhos do Hyprland
+PKG_CONFIG_PATH="/var/cache/hyprpm/$USER/headersRoot/share/pkgconfig:$PKG_CONFIG_PATH" make all
+```
+
+*O binário `Hyprspace.so` resultante será carregado automaticamente pelo `hyprland.conf` durante a inicialização (`exec-once = hyprctl plugin load ...`)[cite: 3, 5].*
+
+---
+
+## 🚀 Instalação e Deploy
+
+O deploy é gerenciado pelo script idempotente `install.sh`, responsável por vincular as configurações via symlinks, ajustar permissões e configurar regras de hardware[cite: 6]:
+
+```bash
+# 1. Clonar o repositório
+git clone [https://github.com/enniooctavio/hyprland-octavius.git](https://github.com/enniooctavio/hyprland-octavius.git) ~/hyprland-octavius
+
+# 2. Executar o instalador
+cd ~/hyprland-octavius
+chmod +x install.sh
+./install.sh
+```
+
+### Configuração dos Monitores (`nwg-displays`)
+Abra o `nwg-displays` no menu de aplicativos e mapeie o layout físico dos displays[cite: 13]. Marque a opção **"Usar descrição"** para que a configuração seja persistida por ID único do hardware em `~/.config/hypr/monitors.conf` e `~/.config/hypr/workspaces.conf`[cite: 13].
+
+---
+
+## ⌨️ Principais Atalhos de Teclado
+
+| Atalho | Ação |
+| :--- | :--- |
+| `SUPER + W` | Alternar Visão Geral / Overview (`Hyprspace`) |
+| `SUPER + SHIFT + D` | Alternar Central de Notificações (`SwayNC`) |
+| `SUPER + ESPAÇO` | Lançador de Aplicativos (`Rofi`)[cite: 3, 5] |
+| `SUPER + .` | Menu de Emojis (`Rofimoji`)[cite: 3, 5] |
+| `SUPER + ` ` ` (code:49) | Terminal Principal (`Kitty`)[cite: 3, 5] |
+| `SUPER + S` | Alternar Terminal Scratchpad[cite: 3, 5, 13] |
+| `SUPER + CTRL + S` | Mover Janela Atual para o Scratchpad[cite: 3, 5] |
+| `SUPER + SHIFT + S` | Captura de Tela Interativa (`Grim` + `Slurp` + `Swappy`)[cite: 3, 5] |
+| `SUPER + SHIFT + V` | Histórico da Área de Transferência (`Cliphist`)[cite: 3, 5] |
+| `SUPER + N` / `SUPER + SHIFT + N` | Ciclar Workspaces / Mover Janela Ciclando[cite: 3, 5] |
+| `SUPER + L` | Bloqueio de Tela (`Hyprlock`)[cite: 3, 5] |
+| `SUPER + D` | Ocultar/Mostrar Janelas (`toggle-desktop`)[cite: 3, 5] |
+| `SUPER + ESC` | Menu de Energia / Logout (`power-menu`)[cite: 3, 5] |
