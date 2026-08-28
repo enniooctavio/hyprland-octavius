@@ -78,17 +78,11 @@ PKG_CONFIG_PATH="/var/cache/hyprpm/$USER/headersRoot/share/pkgconfig:$PKG_CONFIG
 
 ## 🚀 Instalação e Deploy
 
-O deploy é gerenciado pelo script idempotente `install.sh`, responsável por vincular as configurações via symlinks, ajustar permissões e configurar regras de hardware[cite: 6]:
+O deploy é gerenciado pelo script idempotente `install.sh`, responsável por vincular as configurações via symlinks, ajustar permissões, configurar regras de hardware e provisionar a cadeia PAM com PIN interativo:
 
-```bash
-# 1. Clonar o repositório
-git clone [https://github.com/enniooctavio/hyprland-octavius.git](https://github.com/enniooctavio/hyprland-octavius.git) ~/hyprland-octavius
-
-# 2. Executar o instalador
-cd ~/hyprland-octavius
-chmod +x install.sh
-./install.sh
-```
+1. **Clonar o Repositório:**
+   ```bash
+   git clone [https://github.com/enniooctavio/hyprland-octavius.git](https://github.com/enniooctavio/hyprland-octavius.git) ~/hyprland-octavius
 
 ### Configuração dos Monitores (`nwg-displays`)
 Abra o `nwg-displays` no menu de aplicativos e mapeie o layout físico dos displays[cite: 13]. Marque a opção **"Usar descrição"** para que a configuração seja persistida por ID único do hardware em `~/.config/hypr/monitors.conf` e `~/.config/hypr/workspaces.conf`[cite: 13].
