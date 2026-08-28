@@ -66,4 +66,29 @@ if command -v libinput-gestures-setup &>/dev/null; then
     libinput-gestures-setup restart || true
 fi
 
+# 10. Configuração de Autenticação Resiliente (PAM + PIN)
+if [ -d "$DIR_PROJETO/system_fixes/pam" ]; then
+    echo "🔐 Configurando autenticação PAM (requer sudo)..."
+
+    # Backup preventivo das regras originais
+    [ -f /etc/pam.d/sudo ] && sudo cp -n /etc/pam.d/sudo /etc/pam.d/sudo.bkp
+    [ -f /etc/pam.d/hyprlock ] && sudo cp -n /etc/pam.d/hyprlock /etc/pam.d/hyprlock.bkp
+
+    # Instala as regras customizadas do Octavius
+    sudo cp "$DIR_PROJETO/system_fixes/pam/sudo" /etc/pam.d/sudo
+    sudo cp "$DIR_PROJETO/system_fixes/pam/hyprlock" /etc/pam.d/hyprlock
+
+    # Cadastro interativo do PIN se ainda não existir
+    if [ ! -f /etc/security/pin.pwdfile ]; then
+        if command -v mkpasswd &>/dev/null; then
+            read -sp "Digite o PIN numérico desejado para sudo/hyprlock: " USER_PIN
+            echo
+            echo "$USER:$(mkpasswd -m sha-512 "$USER_PIN")" | sudo tee /etc/security/pin.pwdfile > /dev/null
+            sudo chmod 600 /etc/security/pin.pwdfile
+            echo "🔑 PIN configurado com sucesso em /etc/security/pin.pwdfile."
+        else
+            echo "⚠️  Comando 'mkpasswd' não encontrado. Instale o pacote 'whois' para gerar o PIN."
+        fi
+    fi
+fi
 echo "✅ [Project Octavius] Deploy concluído com sucesso!"
