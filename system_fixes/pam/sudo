@@ -1,0 +1,23 @@
+#%PAM-1.0
+
+# Limites e variáveis de ambiente
+session    required    pam_limits.so
+session    required    pam_env.so readenv=1 user_readenv=0
+session    required    pam_env.so readenv=1 envfile=/etc/default/locale user_readenv=0
+
+# 1. Biometria (executa uma única vez)
+auth       sufficient  pam_fprintd.so
+
+# 2. PIN Numérico Local (solicita prompt caso a biometria expire ou seja cancelada)
+auth       sufficient  pam_pwdfile.so pwdfile=/etc/security/pin.pwdfile
+
+# 3. Senha padrão do usuário (valida a senha já digitada sem reabrir a biometria)
+auth       sufficient  pam_unix.so nullok try_first_pass
+
+# Bloqueio em caso de falha em todos os métodos
+auth       requisite   pam_deny.so
+auth       required    pam_permit.so
+
+# Módulos de conta e sessão do sistema
+@include common-account
+@include common-session-noninteractive

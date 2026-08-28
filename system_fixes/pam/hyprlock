@@ -1,0 +1,14 @@
+# PAM configuration file for hyprlock
+
+# 1. Biometria
+auth       sufficient  pam_fprintd.so
+
+# 2. PIN Local
+auth       sufficient  pam_pwdfile.so pwdfile=/etc/security/pin.pwdfile
+
+# 3. Senha Padrão
+auth       sufficient  pam_unix.so nullok try_first_pass
+
+# Bloqueio
+auth       requisite   pam_deny.so
+auth       required    pam_permit.so
