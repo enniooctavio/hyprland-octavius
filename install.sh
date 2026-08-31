@@ -25,6 +25,8 @@ ln -sf "$DIR_PROJETO/dot_config/hypr/hypridle.conf" "$DIR_HYPR/hypridle.conf"
 ln -sf "$DIR_PROJETO/dot_config/hypr/hyprlock.conf" "$DIR_HYPR/hyprlock.conf"
 ln -sfn "$DIR_PROJETO/dot_config/hypr/scripts" "$DIR_HYPR/scripts"
 ln -sfn "$DIR_PROJETO/dot_config/hypr/shaders" "$DIR_HYPR/shaders"
+ln -sf "$DIR_PROJETO/dot_config/hypr/workspaces-office.conf" "$DIR_HYPR/workspaces-office.conf"
+ln -sf "$DIR_PROJETO/dot_config/hypr/workspaces-home.conf" "$DIR_HYPR/workspaces-home.conf"
 
 # 4. Symlinks dos apps visuais e de gestos
 ln -sfn "$DIR_PROJETO/dot_config/waybar" "$DIR_CONFIG/waybar"
@@ -91,4 +93,10 @@ if [ -d "$DIR_PROJETO/system_fixes/pam" ]; then
         fi
     fi
 fi
+
+# 11. Detecção e vinculação automática do perfil de workspace ativo
+if [ -f "$DIR_HYPR/scripts/detect-workspaces.sh" ]; then
+    bash "$DIR_HYPR/scripts/detect-workspaces.sh"
+fi
+
 echo "✅ [Project Octavius] Deploy concluído com sucesso!"
