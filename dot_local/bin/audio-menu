@@ -1,0 +1,65 @@
+#!/bin/bash
+
+MODE="${1:-all}"
+
+menu_devices() {
+    if [[ "$MODE" == "output" || "$MODE" == "all" ]]; then
+        DEFAULT_SINK=$(LANG=C pactl get-default-sink)
+        LANG=C pactl list sinks | awk -v def="$DEFAULT_SINK" '
+        /^Sink/ { 
+            if(name != "") {
+                star = (name == def) ? " 🌟 [PADRÃO]" : ""
+                printf "🔈 [Saída]%s  |  %s [%s]  |  %s\n", star, desc, vol, name
+            }
+            name=""; desc=""; vol="" 
+        }
+        /^[ \t]*Name:/ { name = $2 }
+        /^[ \t]*Description:/ { $1=""; desc=substr($0, 2) }
+        /^[ \t]*Volume:/ { match($0, /[0-9]+%/); vol = (RSTART>0) ? substr($0, RSTART, RLENGTH) : "---" }
+        END {
+            if(name != "") {
+                star = (name == def) ? " 🌟 [PADRÃO]" : ""
+                printf "🔈 [Saída]%s  |  %s [%s]  |  %s\n", star, desc, vol, name
+            }
+        }'
+    fi
+
+    if [[ "$MODE" == "input" || "$MODE" == "all" ]]; then
+        DEFAULT_SRC=$(LANG=C pactl get-default-source)
+        LANG=C pactl list sources | awk -v def="$DEFAULT_SRC" '
+        /^Source/ { 
+            if(name != "" && name !~ /\.monitor$/ && tolower(desc) !~ /v4l2/) {
+                star = (name == def) ? " 🌟 [PADRÃO]" : ""
+                printf "🎤 [Entrada]%s  |  %s [%s]  |  %s\n", star, desc, vol, name
+            }
+            name=""; desc=""; vol="" 
+        }
+        /^[ \t]*Name:/ { name = $2 }
+        /^[ \t]*Description:/ { $1=""; desc=substr($0, 2) }
+        /^[ \t]*Volume:/ { match($0, /[0-9]+%/); vol = (RSTART>0) ? substr($0, RSTART, RLENGTH) : "---" }
+        END {
+            if(name != "" && name !~ /\.monitor$/ && tolower(desc) !~ /v4l2/) {
+                star = (name == def) ? " 🌟 [PADRÃO]" : ""
+                printf "🎤 [Entrada]%s  |  %s [%s]  |  %s\n", star, desc, vol, name
+            }
+        }'
+    fi
+}
+
+selected=$(menu_devices | rofi -dmenu -p "⚙️ Dispositivos ($MODE)" -theme-str 'window {width: 1000px; height: 720px;}')
+
+if [ -n "$selected" ]; then
+    node_name=$(echo "$selected" | awk -F '  \\|  ' '{print $3}' | tr -d ' ')
+    is_sink=$(echo "$selected" | grep -c "Saída")
+    
+    if [ -n "$node_name" ]; then
+        if [ "$is_sink" -gt 0 ]; then
+            pactl set-default-sink "$node_name"
+        else
+            pactl set-default-source "$node_name"
+        fi
+        
+        device_desc=$(echo "$selected" | awk -F '  \\|  ' '{print $2}' | sed -E 's/ \[.*\]//')
+        notify-send "Áudio Alterado" "Padrão definido para:\n$device_desc" -i audio-card
+    fi
+fi

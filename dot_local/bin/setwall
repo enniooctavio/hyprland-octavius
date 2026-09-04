@@ -5,7 +5,7 @@ PARAM1=$2
 PARAM2=${3:-jpg}
 
 if [ -z "$MODO" ]; then
-    echo "Uso: setwall <triplo|duplo|slide> <nome/pasta> [ext]"
+    echo "Uso: setwall <triplo|duplo|mono|slide> <nome/pasta> [ext]"
     exit 1
 fi
 
@@ -41,6 +41,17 @@ elif [ "$MODO" == "duplo" ]; then
     IMG1="$PASTA_DUPLO/${PARAM1}1.$PARAM2"
     
     echo "swaybg -o ${MONITORES[0]} -i $IMG0 -m fill -o ${MONITORES[1]} -i $IMG1 -m fill >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+
+elif [ "$MODO" == "mono" ]; then
+    IMG="$PICTURES_DIR/Wallpapers/$PARAM1.$PARAM2"
+    
+    CMD="swaybg"
+    for mon in "${MONITORES[@]}"; do
+        CMD+=" -o $mon -i $IMG -m fill"
+    done
+    CMD+=" >/dev/null 2>&1 &"
+    
+    echo "$CMD" >> "$ARQUIVO_BOOT"
 
 elif [ "$MODO" == "slide" ]; then
     echo "~/.local/bin/awww-daemon >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"

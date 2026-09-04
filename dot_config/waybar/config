@@ -11,11 +11,11 @@
         "cpu",
         "memory",
         "hyprland/language",
-        "pulseaudio",
+        "pulseaudio#audio",
+        "pulseaudio#mic",
         "backlight",
         "network",
         "battery",
-        "tray",
         "custom/notification",
         "custom/power"
     ],
@@ -33,28 +33,36 @@
         "on-click": "/home/ennio.octavio/.local/bin/cycle-ws"
     },
 
-    "pulseaudio": {
+    "pulseaudio#audio": {
         "format": "{icon}  {volume}%",
-        "format-bluetooth": "{icon} 󰂯 {volume}%",
         "format-muted": "󰝟  Mute",
         "format-icons": {
             "headphone": "󰋋",
-            "hands-free": "󰋋",
             "headset": "󰋋",
-            "phone": "󰏲",
-            "portable": "󰏲",
-            "car": "󰆋",
             "default": ["󰕿", "󰖀", "󰕾"]
         },
-        "on-click": "pavucontrol"
+        "scroll-step": 0,
+        "on-click": "audio-menu output",
+        "on-scroll-up": "swayosd-client --output-volume raise",
+        "on-scroll-down": "swayosd-client --output-volume lower"
+    },
+
+    "pulseaudio#mic": {
+        "format": "{format_source}",
+        "format-source": "🎤 {volume}%",
+        "format-source-muted": "󰍭 Mute",
+        "tooltip": false,
+        "scroll-step": 0,
+        "on-click": "audio-menu input",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SOURCE@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%-"
     },
 
     "backlight": {
         "format": "{icon} {percent}%",
         "format-icons": ["󰃞", "󰃟", "󰃠"],
-        "on-scroll-up": "swayosd-client --brightness raise",
-        "on-scroll-down": "swayosd-client --brightness lower",
-        "smooth-scrolling-threshold": 1
+        "tooltip": false,
+        "scroll-step": 5
     },
 
     "network": {

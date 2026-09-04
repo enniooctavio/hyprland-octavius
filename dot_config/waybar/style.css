@@ -106,6 +106,20 @@ window#waybar {
     border-color: #ff007c;
 }
 
+/* Espaçamento individual para os ícones dentro da bandeja (Tray) */
+#tray > * {
+    padding: 0 4px;
+    margin: 0 3px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
 /* Tooltip do Calendário / Hover */
 tooltip {
     background-color: rgba(17, 17, 27, 0.95);
