@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 echo "🚀 [Project Octavius] Instalando e sincronizando ecossistema..."
 
@@ -11,6 +11,7 @@ DIR_BIN="$HOME/.local/bin"
 # 1. Estrutura base de diretórios
 mkdir -p "$DIR_CONFIG"
 mkdir -p "$DIR_HYPR"
+mkdir -p "$DIR_HYPR/workspace-profiles"
 mkdir -p "$DIR_BIN"
 
 # 2. Backup de segurança do hyprland.conf caso seja um arquivo real (não link)
@@ -23,10 +24,23 @@ fi
 ln -sf "$DIR_PROJETO/dot_config/hypr/hyprland.conf" "$DIR_HYPR/hyprland.conf"
 ln -sf "$DIR_PROJETO/dot_config/hypr/hypridle.conf" "$DIR_HYPR/hypridle.conf"
 ln -sf "$DIR_PROJETO/dot_config/hypr/hyprlock.conf" "$DIR_HYPR/hyprlock.conf"
+ln -sf "$DIR_PROJETO/dot_config/hypr/monitors-default.conf" "$DIR_HYPR/monitors-default.conf"
+ln -sf "$DIR_PROJETO/dot_config/hypr/workspaces-default.conf" "$DIR_HYPR/workspaces-default.conf"
 ln -sfn "$DIR_PROJETO/dot_config/hypr/scripts" "$DIR_HYPR/scripts"
 ln -sfn "$DIR_PROJETO/dot_config/hypr/shaders" "$DIR_HYPR/shaders"
-ln -sf "$DIR_PROJETO/dot_config/hypr/workspaces-office.conf" "$DIR_HYPR/workspaces-office.conf"
-ln -sf "$DIR_PROJETO/dot_config/hypr/workspaces-home.conf" "$DIR_HYPR/workspaces-home.conf"
+
+# Shared defaults contain no monitor identifiers. Keep local monitor/workspace
+# profiles in ~/.config/hypr and never copy them from this repository.
+if [[ ! -e "$DIR_HYPR/monitors.conf" ]]; then
+    ln -sfn "$DIR_HYPR/monitors-default.conf" "$DIR_HYPR/monitors.conf"
+fi
+if [[ ! -e "$DIR_HYPR/workspaces.conf" ]]; then
+    ln -sfn "$DIR_HYPR/workspaces-default.conf" "$DIR_HYPR/workspaces.conf"
+fi
+if [[ ! -e "$DIR_HYPR/monitor-profile-map.conf" ]]; then
+    cp "$DIR_PROJETO/dot_config/hypr/monitor-profile-map.conf.example" \
+        "$DIR_HYPR/monitor-profile-map.conf"
+fi
 
 # 4. Symlinks dos apps visuais e de gestos
 ln -sfn "$DIR_PROJETO/dot_config/waybar" "$DIR_CONFIG/waybar"
@@ -58,9 +72,16 @@ chmod -R +x "$DIR_PROJETO/dot_config/hypr/scripts/" 2>/dev/null || true
 
 # 8. Regras de sistema udev (se existirem)
 if [ -f "$DIR_PROJETO/system_fixes/50-bluetooth-wake.rules" ]; then
-    echo "⚙️  Instalando regras udev (requer sudo)..."
-    sudo cp "$DIR_PROJETO/system_fixes/50-bluetooth-wake.rules" /etc/udev/rules.d/
-    sudo udevadm control --reload-rules && sudo udevadm trigger
+    UDEV_RULE="/etc/udev/rules.d/50-bluetooth-wake.rules"
+    if ! cmp -s "$DIR_PROJETO/system_fixes/50-bluetooth-wake.rules" \
+        "$UDEV_RULE"; then
+        echo "⚙️  Atualizando regra udev (requer sudo)..."
+        sudo install -m 0644 \
+            "$DIR_PROJETO/system_fixes/50-bluetooth-wake.rules" \
+            "$UDEV_RULE"
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger
+    fi
 fi
 
 # 9. Reiniciar daemon de gestos
@@ -68,35 +89,33 @@ if command -v libinput-gestures-setup &>/dev/null; then
     libinput-gestures-setup restart || true
 fi
 
-# 10. Configuração de Autenticação Resiliente (PAM + PIN)
-if [ -d "$DIR_PROJETO/system_fixes/pam" ]; then
-    echo "🔐 Configurando autenticação PAM (requer sudo)..."
-
-    # Backup preventivo das regras originais
-    [ -f /etc/pam.d/sudo ] && sudo cp -n /etc/pam.d/sudo /etc/pam.d/sudo.bkp
-    [ -f /etc/pam.d/hyprlock ] && sudo cp -n /etc/pam.d/hyprlock /etc/pam.d/hyprlock.bkp
-
-    # Instala as regras customizadas do Octavius
-    sudo cp "$DIR_PROJETO/system_fixes/pam/sudo" /etc/pam.d/sudo
-    sudo cp "$DIR_PROJETO/system_fixes/pam/hyprlock" /etc/pam.d/hyprlock
-
-    # Cadastro interativo do PIN se ainda não existir
-    if [ ! -f /etc/security/pin.pwdfile ]; then
-        if command -v mkpasswd &>/dev/null; then
-            read -sp "Digite o PIN numérico desejado para sudo/hyprlock: " USER_PIN
-            echo
-            echo "$USER:$(mkpasswd -m sha-512 "$USER_PIN")" | sudo tee /etc/security/pin.pwdfile > /dev/null
-            sudo chmod 600 /etc/security/pin.pwdfile
-            echo "🔑 PIN configurado com sucesso em /etc/security/pin.pwdfile."
-        else
-            echo "⚠️  Comando 'mkpasswd' não encontrado. Instale o pacote 'whois' para gerar o PIN."
+# 10. Permite que Hyprlock leia o hash apenas para o usuário da sessão.
+if [[ -e /etc/security/pin.pwdfile ]]; then
+    PIN_ACL_USER="$(id -un)"
+    if command -v setfacl &>/dev/null && command -v getfacl &>/dev/null; then
+        PIN_ACL="$(getfacl -cp /etc/security/pin.pwdfile)"
+        if ! grep -Fxq 'user::rw-' <<<"$PIN_ACL" ||
+           ! grep -Fxq "user:$PIN_ACL_USER:r--" <<<"$PIN_ACL" ||
+           ! grep -Fxq 'group::---' <<<"$PIN_ACL" ||
+           ! grep -Fxq 'mask::r--' <<<"$PIN_ACL" ||
+           ! grep -Fxq 'other::---' <<<"$PIN_ACL"; then
+            echo "🔐 Permitindo leitura do PIN apenas para $PIN_ACL_USER..."
+            sudo setfacl -m \
+                "u::rw-,u:$PIN_ACL_USER:r--,g::---,m::r--,o::---" \
+                /etc/security/pin.pwdfile
         fi
+    else
+        echo "⚠️  Instale 'acl' para habilitar PIN no Hyprlock com acesso restrito."
     fi
 fi
 
-# 11. Detecção e vinculação automática do perfil de workspace ativo
-if [ -f "$DIR_HYPR/scripts/detect-workspaces.sh" ]; then
-    bash "$DIR_HYPR/scripts/detect-workspaces.sh"
+if [[ ! -x /usr/libexec/hyprpolkitagent ]]; then
+    echo "⚠️  Agente polkit ausente; instale o pacote 'hyprpolkitagent'."
+fi
+
+# 11. Ativa perfil local somente se já houver uma sessão Hyprland.
+if command -v hyprctl &>/dev/null && hyprctl -j monitors all >/dev/null 2>&1; then
+    "$DIR_BIN/detect-workspaces.sh" || true
 fi
 
 echo "✅ [Project Octavius] Deploy concluído com sucesso!"

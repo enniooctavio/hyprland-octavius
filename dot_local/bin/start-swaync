@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then
+    echo "WAYLAND_DISPLAY is unavailable; cannot start SwayNC yet" >&2
+    exit 1
+fi
+
+dbus-update-activation-environment --systemd \
+    WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+systemctl --user import-environment \
+    WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+systemctl --user reset-failed swaync.service
+systemctl --user restart swaync.service

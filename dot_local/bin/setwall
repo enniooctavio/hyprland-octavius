@@ -5,7 +5,7 @@ PARAM1=$2
 PARAM2=${3:-jpg}
 
 if [ -z "$MODO" ]; then
-    echo "Uso: setwall <triplo|duplo|mono|slide> <nome/pasta> [ext]"
+    echo "Uso: setwall <triplo|duplo|mono|slide|video> <nome/pasta> [ext]"
     exit 1
 fi
 
@@ -23,10 +23,11 @@ PICTURES_DIR=${XDG_PICTURES_DIR:-$HOME/Imagens}
 PASTA_DUPLO="$PICTURES_DIR/Wallpapers/duplo"
 PASTA_TRIPLO="$PICTURES_DIR/Wallpapers/triplo"
 PASTA_WALLPAPERS="$PICTURES_DIR/Wallpapers/$PARAM1"
+VIDEOS_DIR=${XDG_VIDEOS_DIR:-$HOME/Videos}
 
 # Inicia o arquivo de boot limpo
 echo "#!/bin/bash" > "$ARQUIVO_BOOT"
-echo "killall swaybg awww-daemon sleep 2>/dev/null" >> "$ARQUIVO_BOOT"
+echo "killall swaybg awww-daemon mpvpaper 2>/dev/null" >> "$ARQUIVO_BOOT"
 echo "pkill -f wallpaper-slideshow.sh 2>/dev/null" >> "$ARQUIVO_BOOT"
 
 if [ "$MODO" == "triplo" ]; then
@@ -57,6 +58,12 @@ elif [ "$MODO" == "slide" ]; then
     echo "~/.local/bin/awww-daemon >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
     echo "sleep 1" >> "$ARQUIVO_BOOT"
     echo "~/.config/hypr/scripts/wallpaper-slideshow.sh \"$PASTA_WALLPAPERS\" >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
+elif [ "$MODO" == "video" ]; then
+    if [[ "$PARAM2" == "jpg" ]]; then
+        PARAM2=mp4
+    fi
+    VIDEO="$VIDEOS_DIR/$PARAM1.$PARAM2"
+    echo "mpvpaper -p '*' \"$VIDEO\" -o \"hwdec=auto loop=inf no-audio\" >/dev/null 2>&1 &" >> "$ARQUIVO_BOOT"
 fi
 
 chmod +x "$ARQUIVO_BOOT"

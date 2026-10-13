@@ -1,0 +1,6 @@
+# Copy to ~/.config/hypr/monitor-profile-map.conf and customize locally.
+# Format: profile-name|extended-regex-matched-against-active-monitor-description
+# The matching strings and monitor/workspace layouts are intentionally local.
+# Example (replace these placeholders with your own display descriptions):
+# desk-a|Example Display Manufacturer
+# desk-b|Another Display Manufacturer

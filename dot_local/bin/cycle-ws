@@ -1,11 +1,31 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Pega o ID numérico do workspace atual nativamente[cite: 21]
-WS=$(hyprctl activeworkspace -j | grep '"id":' | head -n 1 | awk '{print $2}' | tr -d ',')
-NEXT=$(((WS + 2) % 9 + 1))
+WS="$(hyprctl activeworkspace -j | jq -r '.id // empty')"
+if [[ ! "$WS" =~ ^[0-9]+$ ]]; then
+    echo "Could not determine the active numeric workspace" >&2
+    exit 1
+fi
 
-# Sintaxe nativa limpa para o hyprland.conf
-if [ "$1" == "move" ]; then
+case "$WS" in
+    1|4|7) GROUP=(1 4 7) ;;
+    2|5|8) GROUP=(2 5 8) ;;
+    3|6|9|10) GROUP=(3 6 9 10) ;;
+    *)
+        echo "Workspace $WS is outside the configured monitor groups" >&2
+        exit 1
+        ;;
+esac
+
+NEXT="${GROUP[0]}"
+for ((index = 0; index < ${#GROUP[@]}; index++)); do
+    if [[ "${GROUP[index]}" == "$WS" ]]; then
+        NEXT="${GROUP[$(((index + 1) % ${#GROUP[@]}))]}"
+        break
+    fi
+done
+
+if [[ "${1:-}" == "move" ]]; then
     hyprctl dispatch movetoworkspace "$NEXT"
 else
     hyprctl dispatch workspace "$NEXT"

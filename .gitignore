@@ -1,2 +1,5 @@
 *.pwdfile
 pin.pwdfile
+dot_config/hypr/monitor-profile-map.conf
+dot_config/hypr/monitors-*.local.conf
+dot_config/hypr/workspaces-*.local.conf

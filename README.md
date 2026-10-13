@@ -1,108 +1,169 @@
-# 🚀 Hyprland Octavius
+# Hyprland Octavius
 
-Um ecossistema modular, performático e nativo para o [Hyprland](https://hyprland.org/)[cite: 13], projetado para workflows corporativos de alta produtividade, gerenciamento avançado de múltiplos monitores em estações dock e estética Cyberpunk refinada com foco em eficiência energética e estabilidade[cite: 13].
+Configurações e scripts para um ambiente Hyprland com atalhos próprios,
+Waybar, Rofi, SwayNC, gestos, controle de mídia e suporte a múltiplos monitores.
+O repositório contém defaults compartilháveis; layouts e identificadores físicos
+dos monitores ficam na configuração local de cada máquina.
 
----
+## Funcionalidades
 
-## 🌌 Visão Geral
+- Perfis de monitores/workspaces selecionados localmente por eventos de
+  hotplug, abertura da tampa e retomada da suspensão.
+- Waybar, Rofi e SwayNC com tema cyberpunk.
+- Hyprspace para overview e Hyprfocus para animações de foco, como plugins
+  externos do Hyprland.
+- Gestos via `libinput-gestures`, OSD via SwayOSD e clipboard via Cliphist.
+- Scratchpad, grupos de janelas, captura de área, menus de áudio/energia e
+  ferramentas de wallpaper.
+- Regras udev opcionais para o adaptador Bluetooth listado em
+  `system_fixes/50-bluetooth-wake.rules`.
 
-O **Project Octavius** centraliza e versiona todas as configurações do Hyprland em sua sintaxe declarativa nativa `.conf`[cite: 13]. O ambiente conta com detecção dinâmica de monitores via descritores físicos de hardware[cite: 13], navegação espacial de janelas, central de controle e notificações deslizante, pop-ups OSD modernos e suporte a gestos multi-touch no touchpad.
+## Dependências
 
----
-
-## ✨ Funcionalidades Principais
-
-* **Overview Espacial por Monitor (`Hyprspace`):** Visão geral de janelas abertas filtrada exclusivamente para o display em foco, eliminando poluição visual de múltiplos monitores (`SUPER + W` ou gesto de 3 dedos para cima)[cite: 4, 5].
-* **Central de Notificações & Controle (`SwayNC`):** Painel lateral deslizante com histórico de alertas, controle de Não Perturbe (DND), controles multimídia MPRIS e integração com a Waybar (`SUPER + SHIFT + D`)[cite: 9, 11].
-* **Regras de Janela Modernizadas (Hyprland 0.56+):**
-  * **Picture-in-Picture:** Janelas flutuantes com ancoragem automática no canto inferior direito (`pin on` + `size 25% 25%`).
-  * **Diálogos de Sistema:** Janelas de seleção de arquivos, `pavucontrol` e autenticação com comportamento flutuante automático (`float on`).
-  * **Isolamento de Screen Share (`xwaylandvideobridge`):** Ocultação transparente e isolamento de buffers virtuais para evitar telas pretas em transmissões no Slack, Google Meet e Discord.
-* **Gestos Nativos no Touchpad (`libinput-gestures`):** Deslize de 3 dedos para navegação contínua entre workspaces (`swipe left/right`), scratchpad rápido (`swipe down`) e ativação do overview (`swipe up`)[cite: 4].
-* **Autenticação Híbrida e Resiliente:** Suporte unificado para senha corporativa (JumpCloud), PIN local via `pam_pwdfile` e biometria rápida via `pam_fprintd` no `hyprlock`, `sudo` e `polkit`[cite: 2].
-* **OSD Gráfico e Controle de Mídia (`SwayOSD`):** Feedback visual flutuante na tela para ajustes de volume, brilho e caps lock[cite: 3, 5].
-* **Efeitos de Foco & Shaders:** Animações dinâmicas de foco (`hyprfocus`)[cite: 3, 5, 13] e suporte a shaders pós-processamento GLSL (efeitos CRT, ruído VHS e aberração cromática).
-* **Gerenciamento Visual de Displays (`nwg-displays`):** Mapeamento de telas portátil + dock por descritor físico (`desc:`), garantindo persistência sem dependência de nomes de portas de vídeo[cite: 13].
-* **Sistema Avançado de Wallpapers (`setwall` / `cropwall`):** Fatiamento cirúrgico de papéis de parede panorâmicos que fluem sem quebras entre múltiplos monitores[cite: 13].
-* **Scratchpad Terminal Invisível:** Instância persistente do Kitty pronta para chamadas imediatas em workspace especial (`SUPER + S`)[cite: 3, 5, 13].
-
----
-
-## 📦 Dependências e Pré-requisitos
-
-Para o funcionamento pleno do ecossistema, certifique-se de instalar as dependências no sistema base[cite: 13]:
+Em Ubuntu, instale os pacotes usados pela configuração:
 
 ```bash
-sudo apt update && sudo apt install -y \
-  hyprland \
-  waybar \
-  rofi \
-  sway-notification-center \
-  libinput-gestures \
-  brightnessctl \
-  swaybg \
-  imagemagick \
-  jq \
-  wl-clipboard \
-  cliphist \
-  libpam-pwdfile \
-  whois \
-  nwg-displays
+sudo apt update
+sudo apt install \
+  hyprland hyprlock hypridle hyprpolkitagent \
+  waybar rofi sway-notification-center swayosd \
+  libinput-gestures fcitx5 gnome-keyring \
+  kitty nautilus \
+  grim slurp swappy wl-clipboard cliphist \
+  swaybg imagemagick jq \
+  network-manager qalculate-gtk pipewire-pulse wireplumber acl
 ```
 
-### Utilitários Complementares
-* **`SwayOSD`**: Servidor e cliente de pop-ups visuais Wayland para teclado e brilho[cite: 3, 5].
-* **`fcitx5`**: Gerenciador de input para composição de acentuação e cedilha (`ç`)[cite: 3, 5].
+O pacote `hyprland` pode exigir um repositório compatível com a versão usada.
+`nwg-displays` é opcional e pode ajudar a gerar as configurações locais de
+monitores. `pactl` e `wpctl` precisam estar disponíveis para os controles de
+áudio. SwayNC é iniciado pela unidade de usuário, após importar o ambiente
+Wayland da sessão.
 
----
+Os plugins Hyprspace e Hyprfocus são instalados separadamente; veja
+[Plugins](#plugins). Wallpapers e a ferramenta pessoal `k8s-switcher` não são
+distribuídos neste repositório.
 
-## 🛠️ Compilação do Hyprspace (Hyprland 0.56+)
-
-Devido à migração do pipeline gráfico para Aquamarine e modularização de bibliotecas (`hyprutils`), o Hyprspace deve ser compilado a partir da branch com correções de compatibilidade (PR #238):
+## Instalação
 
 ```bash
-# 1. Clonar o repositório e buscar a branch do PR #238
-cd ~/.local/share
-git clone [https://github.com/KZDKM/Hyprspace.git](https://github.com/KZDKM/Hyprspace.git)
-cd Hyprspace
+git clone https://github.com/enniooctavio/hyprland-octavius.git \
+  ~/hyprland-octavius
+cd ~/hyprland-octavius
+./install.sh
+```
+
+O instalador cria os links das configurações e scripts, instala a regra udev
+quando presente e concede leitura do hash PIN via ACL somente ao usuário atual,
+para que o Hyprlock (que não roda como root) consiga validar o PIN. Ele não
+instala pacotes, não cria PIN e não substitui arquivos em `/etc/pam.d`; assim,
+as regras de autenticação corporativas permanecem sob gestão da empresa.
+
+### Perfis locais de monitores
+
+Os arquivos com descrições/seriais dos monitores não fazem parte do repositório.
+Crie-os localmente:
+
+- `~/.config/hypr/monitors-<perfil>.conf`
+- `~/.config/hypr/workspace-profiles/<perfil>.conf`
+- `~/.config/hypr/monitor-profile-map.conf`
+
+O mapa usa uma linha por perfil, no formato
+`nome-do-perfil|regex-da-descrição-do-monitor`. Por exemplo, se o mapa contiver
+`mesa-a|Fabricante Modelo`, o detector procura
+`monitors-mesa-a.conf` e `workspace-profiles/mesa-a.conf`. Comece pelo modelo
+sem dados pessoais em `dot_config/hypr/monitor-profile-map.conf.example`.
+
+Use `nwg-displays` ou `hyprctl monitors all` para descobrir as descrições e
+criar os arquivos locais. O detector espera uma lista estável de monitores,
+recarrega o Hyprland apenas quando muda o perfil e mantém Waybar/SwayNC ativos
+para evitar destruir/recriar superfícies durante o hotplug. O listener de
+eventos também detecta monitores conectados ou removidos; a retomada da
+suspensão dispara uma nova detecção.
+
+Sem mapa ou perfil correspondente, o ambiente usa defaults genéricos e a regra
+de monitor `preferred, auto` de `hyprland.conf`.
+
+## Plugins
+
+### Hyprfocus pelo HyprPM
+
+```bash
+hyprpm add https://github.com/hyprwm/hyprland-plugins
+hyprpm enable hyprfocus
+hyprpm update
+hyprpm reload
+```
+
+Se o Hyprland informar que os plugins foram preparados para o próximo início,
+reinicie a sessão gráfica para carregar builds compatíveis com a ABI atual.
+
+### Hyprspace
+
+O plugin é carregado a partir de
+`~/.local/share/Hyprspace/Hyprspace.so`. O checkout usado neste ambiente é a
+branch de compatibilidade PR #238:
+
+```bash
+mkdir -p ~/.local/share
+git clone https://github.com/KZDKM/Hyprspace.git \
+  ~/.local/share/Hyprspace
+cd ~/.local/share/Hyprspace
 git fetch origin pull/238/head:pr-238
 git checkout pr-238
-
-# 2. Compilar contra os cabeçalhos do Hyprland
-PKG_CONFIG_PATH="/var/cache/hyprpm/$USER/headersRoot/share/pkgconfig:$PKG_CONFIG_PATH" make all
+PKG_CONFIG_PATH="/var/cache/hyprpm/$USER/headersRoot/share/pkgconfig:${PKG_CONFIG_PATH:-}" \
+  make all
 ```
 
-*O binário `Hyprspace.so` resultante será carregado automaticamente pelo `hyprland.conf` durante a inicialização (`exec-once = hyprctl plugin load ...`)[cite: 3, 5].*
+Recompile os plugins após atualizar o Hyprland. Eles são binários externos e
+não são versionados no projeto.
 
----
+## Autenticação
 
-## 🚀 Instalação e Deploy
+`system_fixes/pam/` contém exemplos locais opcionais de PAM para PIN/biometria.
+Eles não são aplicados pelo instalador: revise-os com a administração da
+máquina antes de qualquer uso, pois políticas corporativas são externas a este
+projeto. Para que `pam_pwdfile` funcione no Hyprlock, conceda leitura do arquivo
+somente à conta da sessão (o Hyprlock não roda como root):
 
-O deploy é gerenciado pelo script idempotente `install.sh`, responsável por vincular as configurações via symlinks, ajustar permissões, configurar regras de hardware e provisionar a cadeia PAM com PIN interativo:
+```bash
+sudo setfacl -m \
+  "u::rw-,u:$(id -un):r--,g::---,m::r--,o::---" \
+  /etc/security/pin.pwdfile
+getfacl -cp /etc/security/pin.pwdfile
+```
 
-1. **Clonar o Repositório:**
-   ```bash
-   git clone [https://github.com/enniooctavio/hyprland-octavius.git](https://github.com/enniooctavio/hyprland-octavius.git) ~/hyprland-octavius
+O serviço `fprintd` também precisa estar habilitado para biometria.
 
-### Configuração dos Monitores (`nwg-displays`)
-Abra o `nwg-displays` no menu de aplicativos e mapeie o layout físico dos displays[cite: 13]. Marque a opção **"Usar descrição"** para que a configuração seja persistida por ID único do hardware em `~/.config/hypr/monitors.conf` e `~/.config/hypr/workspaces.conf`[cite: 13].
-
----
-
-## ⌨️ Principais Atalhos de Teclado
+## Atalhos principais
 
 | Atalho | Ação |
-| :--- | :--- |
-| `SUPER + W` | Alternar Visão Geral / Overview (`Hyprspace`) |
-| `SUPER + SHIFT + D` | Alternar Central de Notificações (`SwayNC`) |
-| `SUPER + ESPAÇO` | Lançador de Aplicativos (`Rofi`)[cite: 3, 5] |
-| `SUPER + .` | Menu de Emojis (`Rofimoji`)[cite: 3, 5] |
-| `SUPER + ` ` ` (code:49) | Terminal Principal (`Kitty`)[cite: 3, 5] |
-| `SUPER + S` | Alternar Terminal Scratchpad[cite: 3, 5, 13] |
-| `SUPER + CTRL + S` | Mover Janela Atual para o Scratchpad[cite: 3, 5] |
-| `SUPER + SHIFT + S` | Captura de Tela Interativa (`Grim` + `Slurp` + `Swappy`)[cite: 3, 5] |
-| `SUPER + SHIFT + V` | Histórico da Área de Transferência (`Cliphist`)[cite: 3, 5] |
-| `SUPER + N` / `SUPER + SHIFT + N` | Ciclar Workspaces / Mover Janela Ciclando[cite: 3, 5] |
-| `SUPER + L` | Bloqueio de Tela (`Hyprlock`)[cite: 3, 5] |
-| `SUPER + D` | Ocultar/Mostrar Janelas (`toggle-desktop`)[cite: 3, 5] |
-| `SUPER + ESC` | Menu de Energia / Logout (`power-menu`)[cite: 3, 5] |
+| --- | --- |
+| `SUPER + W` | Overview do Hyprspace |
+| `SUPER + SHIFT + D` | Alternar central do SwayNC |
+| `SUPER + SPACE` | Lançador de aplicativos (Rofi) |
+| `SUPER + Q` | Menu de emojis (Rofimoji, se instalado) |
+| `SUPER + grave` | Terminal (tecla `code:49`) |
+| `SUPER + S` | Alternar scratchpad |
+| `SUPER + CTRL + S` | Enviar janela ao scratchpad |
+| `SUPER + SHIFT + S` | Captura de área (Grim + Slurp + Swappy) |
+| `SUPER + SHIFT + V` | Histórico do clipboard |
+| `SUPER + N` / `SUPER + SHIFT + N` | Ciclar / mover workspace no grupo do monitor |
+| `SUPER + L` | Bloquear tela (Hyprlock) |
+| `SUPER + D` | Ocultar/restaurar workspaces (toggle-desktop) |
+| `SUPER + ESC` | Menu de energia |
+| `SUPER + U` | Executar `~/.local/bin/k8s-switcher` (opcional) |
+
+`SUPER + .` e `SUPER + ,` enviam `End` e `Home` à janela ativa; não são o
+atalho do Rofimoji.
+
+## Wallpapers e utilitários
+
+- `setwall <triplo|duplo|mono|slide|video> <nome> [ext]` cria uma configuração
+  local de inicialização do wallpaper.
+- `cropwall <duplo|triplo> <arquivo> <nome-base>` fatia a imagem; o script
+  atualmente remove o arquivo de origem após o corte.
+- `audio-menu` é chamado pelos controles de áudio da Waybar.
+- `rofi-wifi` pode ser executado manualmente; não possui atalho padrão.
+
+Os arquivos de imagem/vídeo são fornecidos pelo usuário e ficam fora do Git.
