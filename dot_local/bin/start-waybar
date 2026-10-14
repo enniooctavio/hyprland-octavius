@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
-exec waybar "$@"
+
+while true; do
+    waybar "$@"
+    status=$?
+
+    wayland_socket="${WAYLAND_DISPLAY:-}"
+    [[ -n "$wayland_socket" ]] || exit "$status"
+    if [[ "$wayland_socket" != /* ]]; then
+        wayland_socket="${XDG_RUNTIME_DIR:-/run/user/$UID}/$wayland_socket"
+    fi
+    [[ -S "$wayland_socket" ]] || exit "$status"
+
+    logger -t octavius-waybar \
+        "Waybar exited with status $status; restarting" 2>/dev/null || true
+    sleep 2
+done

@@ -130,7 +130,7 @@ fi
 printf '%s\n' "$snapshot" > "$STATE_FILE"
 
 if ! pgrep -x waybar >/dev/null 2>&1; then
-    waybar >/dev/null 2>&1 &
+    "$HOME/.local/bin/start-waybar" >/dev/null 2>&1 &
     disown || true
 fi
 
